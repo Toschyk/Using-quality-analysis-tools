@@ -1,0 +1,62 @@
+﻿<Window x:Class="Using_quality_analysis_tools.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Using_quality_analysis_tools"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <TabControl>
+        <!-- 1. Блокировка UI-потока -->
+        <TabItem Header="CPU / UI Thread">
+            <StackPanel Margin="20">
+                <TextBlock Text="Синхронная тяжёлая операция (блокирует UI):" FontWeight="Bold" Margin="0,0,0,5"/>
+                <Button Content="Запустить синхронно (1e9 итераций)" Click="RunSyncHeavyOperation" Margin="0,0,0,15"/>
+                <TextBlock Text="Асинхронная тяжёлая операция (UI остаётся отзывчивым):" FontWeight="Bold" Margin="0,0,0,5"/>
+                <Button Content="Запустить асинхронно (Task.Run)" Click="RunAsyncHeavyOperation" Margin="0,0,0,10"/>
+                <ProgressBar x:Name="AsyncProgressBar" Height="20" Visibility="Collapsed"/>
+            </StackPanel>
+        </TabItem>
+
+        <!-- 2. Утечки памяти -->
+        <TabItem Header="Memory Leaks">
+            <StackPanel Margin="20">
+                <TextBlock Text="Утечка через статическое событие (Static Event Leak):" FontWeight="Bold" Margin="0,0,0,5"/>
+                <Button Content="Создать объект и подписаться на статическое событие" Click="CreateStaticEventLeak" Margin="0,0,0,15"/>
+                <TextBlock Text="Утечка через DispatcherTimer (не остановлен):" FontWeight="Bold" Margin="0,0,0,5"/>
+                <Button Content="Запустить «утекающий» таймер" Click="StartLeakyDispatcherTimer" Margin="0,0,0,10"/>
+            </StackPanel>
+        </TabItem>
+
+        <!-- 3. Данные и визуальное дерево -->
+        <TabItem Header="Visual Tree / Data Binding">
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+                    <Button Content="Добавить элемент" Click="AddItemToList" Margin="0,0,10,0"/>
+                    <Button Content="Добавить 1000 элементов" Click="AddManyItemsToList"/>
+                </StackPanel>
+                <ListBox x:Name="SampleListBox" Grid.Row="1" 
+                         ItemsSource="{Binding Items}" 
+                         DisplayMemberPath="Name"
+                         HorizontalContentAlignment="Stretch"/>
+            </Grid>
+        </TabItem>
+
+        <!-- 4. Намеренная ошибка привязки -->
+        <TabItem Header="Binding Errors">
+            <StackPanel Margin="20">
+                <TextBlock Text="Этот TextBlock имеет намеренную ошибку привязки:" FontWeight="Bold"/>
+                <TextBlock Text="{Binding NonExistentProperty}" 
+                           Background="LightPink" 
+                           Padding="10" 
+                           Margin="0,10,0,0"/>
+                <TextBlock Text="Следите за окном «XAML Binding Failures» во время отладки." 
+                           Margin="0,15,0,0" TextWrapping="Wrap"/>
+            </StackPanel>
+        </TabItem>
+    </TabControl>
+</Window>
